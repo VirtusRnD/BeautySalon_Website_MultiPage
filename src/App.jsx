@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { getActiveTheme } from './theme/themes';
+import { io } from 'socket.io-client';
+import { themes } from './theme/themes';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -13,6 +14,10 @@ import { GalleryPage } from './pages/GalleryPage';
 import { ContactPage } from './pages/ContactPage';
 import { BookingPage } from './pages/BookingPage';
 
+const BACKEND_URL = 'https://theme-backend-vh34.onrender.com';
+const socket = io(BACKEND_URL);
+const CURRENT_SITE_ID = 'salon-multipage';
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -22,9 +27,35 @@ const ScrollToTop = () => {
 };
 
 export default function App() {
-  const currentTheme = getActiveTheme();
+  const [themeKey, setThemeKey] = useState('ivoryEspresso');
 
   useEffect(() => {
+    fetch(`${BACKEND_URL}/api/themes/${CURRENT_SITE_ID}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.activeTheme && themes[data.activeTheme]) {
+          setThemeKey(data.activeTheme);
+        }
+      })
+      .catch((err) => console.error(err));
+
+    const handleThemeChange = (data) => {
+      if (data.siteId === CURRENT_SITE_ID && themes[data.activeTheme]) {
+        setThemeKey(data.activeTheme);
+      }
+    };
+
+    socket.on('theme_changed', handleThemeChange);
+
+    return () => {
+      socket.off('theme_changed', handleThemeChange);
+    };
+  }, []);
+
+  const currentTheme = themes[themeKey] || themes.ivoryEspresso;
+
+  useEffect(() => {
+    if (!currentTheme?.colors) return;
     const root = document.documentElement;
     const { colors } = currentTheme;
 
