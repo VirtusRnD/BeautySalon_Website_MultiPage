@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { themes } from './theme/themes';
-
+import { themes, THEMES } from './theme/themes';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 
@@ -52,8 +51,7 @@ export default function App() {
     };
   }, []);
 
-  const currentTheme = themes[themeKey] || themes.ivoryEspresso;
-
+  const currentTheme = (themes && themes[themeKey]) || (THEMES && THEMES[themeKey]) || {};
   useEffect(() => {
     if (!currentTheme?.colors) return;
     const root = document.documentElement;
