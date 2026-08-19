@@ -90,3 +90,6 @@ export const themes = {
 export const activeThemeKey = 'ivoryEspresso';
 
 export const getActiveTheme = () => themes[activeThemeKey] || themes.ivoryEspresso;
+
+export const THEMES = themes;
+export default themes;
