@@ -27,7 +27,10 @@ const ScrollToTop = () => {
 };
 
 export default function App() {
-  const [themeKey, setThemeKey] = useState('ivoryEspresso');
+  const [themeKey, setThemeKey] = useState(() => {
+    const savedTheme = localStorage.getItem(`${CURRENT_SITE_ID}-theme`);
+    return savedTheme || 'ivoryEspresso';
+  });
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/themes/${CURRENT_SITE_ID}`)
@@ -51,6 +54,21 @@ export default function App() {
       socket.off('theme_changed', handleThemeChange);
     };
   }, []);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === "THEME_CHANGE" && event.data.themeKey && event.data.siteId === CURRENT_SITE_ID) {
+        setThemeKey(event.data.themeKey);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(`${CURRENT_SITE_ID}-theme`, themeKey);
+  }, [themeKey]);
 
   const currentTheme = themes[themeKey] || themes.ivoryEspresso;
 
