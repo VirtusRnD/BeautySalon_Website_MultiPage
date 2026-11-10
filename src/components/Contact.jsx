@@ -1,4 +1,5 @@
 import React from 'react';
+import { CONTACT_EMAIL } from '../data/contact';
 import { MapPin, Phone, Mail, Clock, ArrowUpRight, MessageCircle } from 'lucide-react';
 
 export const Contact = () => {
@@ -60,7 +61,7 @@ export const Contact = () => {
                 </div>
                 <div>
                   <strong style={{ display: 'block', color: 'var(--color-text)', fontSize: '1rem', marginBottom: '4px' }}>E-Posta</strong>
-                  <p style={{ color: 'var(--color-muted-text)', fontSize: '0.95rem' }}>info@aurabeauty.com</p>
+                  <p style={{ color: 'var(--color-muted-text)', fontSize: '0.95rem' }}>{CONTACT_EMAIL}</p>
                 </div>
               </div>
 
